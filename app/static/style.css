@@ -1,0 +1,98 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #f5f7fb;
+  color: #1b2430;
+}
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #13233f;
+  color: white;
+}
+.site-header a { color: white; text-decoration: none; margin-left: 16px; }
+.brand { font-weight: 800; letter-spacing: 0.5px; text-transform: lowercase; }
+.page-shell { padding: 24px; }
+.login-body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+.login-card form { display: flex; flex-direction: column; gap: 10px; }
+input, textarea, select, button {
+  font: inherit;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccd3df;
+}
+button {
+  background: #2d6df6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+button.secondary { background: #eef3ff; color: #2447a8; border: 1px solid #cbd8ff; }
+.muted { color: #667085; }
+.grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+}
+.panel {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+.summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.summary-list button {
+  width: 100%;
+  text-align: left;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+pre, .output, .summary-view {
+  white-space: pre-wrap;
+  background: #f8fafc;
+  border: 1px solid #e5eaf2;
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 240px;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e8f0ff;
+  color: #2447a8;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+@media (max-width: 960px) {
+  .grid { grid-template-columns: 1fr; }
+}
