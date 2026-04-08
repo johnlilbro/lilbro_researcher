@@ -15,6 +15,7 @@ This repo includes a FastAPI web app with:
   - 5 best pitch deck ideas
 - usage tracking and estimated cost display
 - generation history and downloadable markdown outputs
+- SQLite-backed generation history for local persistence
 
 ## Model-backed generation
 
@@ -49,7 +50,7 @@ http://127.0.0.1:8000
 
 ## Railway deployment
 
-This repo now includes Railway-oriented deployment files:
+This repo includes Railway-oriented deployment files:
 - `Procfile`
 - `railway.json`
 - `runtime.txt`
@@ -62,4 +63,4 @@ Current Railway readiness is good for a prototype deployment.
 ## Notes
 
 Current auth is intentionally permissive for prototyping.
-File-based generation history is okay for a prototype but should move to durable storage for production.
+SQLite is now used for generation history, which is a cleaner first persistence layer than flat JSON files.

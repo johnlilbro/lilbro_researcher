@@ -57,11 +57,15 @@ Added support for:
 - saving generated outputs into `generated_outputs/`
 - downloading generated markdown outputs
 - copying output from the frontend
-- recording recent generation history in `generated_outputs/history.json`
+- recording recent generation history
+
+### 10. SQLite persistence layer
+Added a first database-backed persistence layer using SQLite for generation history.
+This replaces the earlier flat JSON approach for tracking recent generations and usage.
 
 ## Deployment planning
 
-### 10. Railway deployment planning
+### 11. Railway deployment planning
 Created `railway_plan.md` with:
 - recommended repository structure
 - deployment notes for Railway
@@ -69,7 +73,7 @@ Created `railway_plan.md` with:
 - warning about ephemeral filesystem storage
 - guidance for future persistence and auth improvements
 
-### 11. Procfile and deployment readiness
+### 12. Procfile and deployment readiness
 Added a `Procfile` using:
 
 ```text

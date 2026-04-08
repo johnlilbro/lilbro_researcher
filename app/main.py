@@ -1,4 +1,3 @@
-import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -9,6 +8,7 @@ from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app.db import add_generation, init_db, recent_generations
 from app.generator import generate
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,12 +16,16 @@ TEMPLATES_DIR = BASE_DIR / "app" / "templates"
 STATIC_DIR = BASE_DIR / "app" / "static"
 SEARCH_DIRS = [BASE_DIR / "summaries", BASE_DIR]
 GENERATED_DIR = BASE_DIR / "generated_outputs"
-HISTORY_FILE = GENERATED_DIR / "history.json"
 GENERATED_DIR.mkdir(exist_ok=True)
 
 app = FastAPI(title="lilbro researcher")
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+
+
+@app.on_event("startup")
+def startup_event() -> None:
+    init_db()
 
 
 def list_markdown_files() -> list[str]:
@@ -53,25 +57,6 @@ def slugify(value: str) -> str:
     return re.sub(r"-+", "-", value).strip("-")
 
 
-def load_history() -> list[dict]:
-    if not HISTORY_FILE.exists():
-        return []
-    try:
-        return json.loads(HISTORY_FILE.read_text())
-    except Exception:
-        return []
-
-
-def save_history(history: list[dict]) -> None:
-    HISTORY_FILE.write_text(json.dumps(history, indent=2))
-
-
-def add_history_item(item: dict) -> None:
-    history = load_history()
-    history.insert(0, item)
-    save_history(history[:50])
-
-
 def session_totals(history: list[dict]) -> dict:
     total_input = sum(int(item.get("usage", {}).get("input_tokens", 0)) for item in history)
     total_output = sum(int(item.get("usage", {}).get("output_tokens", 0)) for item in history)
@@ -96,7 +81,7 @@ def render_app(
     files = list_markdown_files()
     selected_file = file if file in files else (files[0] if files else None)
     file_content = read_markdown_file(selected_file) if selected_file else ""
-    history = load_history()
+    history = recent_generations()
     totals = session_totals(history)
 
     return templates.TemplateResponse(
@@ -166,7 +151,7 @@ def generate_view(request: Request, kind: str, file: str = Form(...)):
         "saved_file": f"generated_outputs/{generated_name}",
         "usage": usage,
     }
-    add_history_item(history_item)
+    add_generation(history_item)
 
     return render_app(
         request,
