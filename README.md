@@ -13,10 +13,12 @@ This repo includes a FastAPI web app with:
   - research agenda
   - PowerPoint-style deck outline
   - 5 best pitch deck ideas
+- usage tracking and estimated cost display
+- generation history and downloadable markdown outputs
 
 ## Model-backed generation
 
-The app now supports **real model-backed generation** through the OpenAI Python SDK.
+The app supports **real model-backed generation** through the OpenAI Python SDK.
 
 Set:
 
@@ -45,6 +47,19 @@ Then open:
 http://127.0.0.1:8000
 ```
 
+## Railway deployment
+
+This repo now includes Railway-oriented deployment files:
+- `Procfile`
+- `railway.json`
+- `runtime.txt`
+- `.env.example`
+- `RAILWAY_DEPLOYMENT_SKILL.md`
+- `railway_plan.md`
+
+Current Railway readiness is good for a prototype deployment.
+
 ## Notes
 
 Current auth is intentionally permissive for prototyping.
+File-based generation history is okay for a prototype but should move to durable storage for production.
