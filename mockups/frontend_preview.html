@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frontend Preview - lilbro researcher</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #f4f7fb;
+      color: #18212f;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #10233f;
+      color: white;
+      padding: 16px 24px;
+    }
+    .brand { font-weight: 800; letter-spacing: 0.5px; }
+    .topnav { display: flex; gap: 16px; color: #d7e4ff; }
+    .shell {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 280px 1.2fr 0.9fr;
+      gap: 20px;
+    }
+    .panel {
+      background: white;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e8f0ff;
+      color: #2350b8;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    h1, h2, h3 { margin-top: 0; }
+    .file-list, .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .file, .history-item {
+      border: 1px solid #dfe7f2;
+      background: #f8fbff;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .file.active {
+      background: #edf4ff;
+      border-color: #b7ceff;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+    .btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: none;
+      background: #2c6af2;
+      color: white;
+      font-weight: 700;
+    }
+    .btn.secondary {
+      background: #eef3ff;
+      color: #2348a5;
+      border: 1px solid #c9d8ff;
+    }
+    .viewer, .output {
+      min-height: 220px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 16px;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+    .usage {
+      border: 1px solid #dbe7ff;
+      background: #f7faff;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .muted { color: #6b7280; }
+    @media (max-width: 1100px) {
+      .shell { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">lilbro researcher</div>
+    <div class="topnav">
+      <div>App</div>
+      <div>Logout</div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="panel">
+      <div class="badge">Summaries</div>
+      <h2>Available markdown files</h2>
+      <p class="muted">Pick a summary or ideas document.</p>
+      <div class="file-list">
+        <div class="file active">summaries/summary_2026-04-08T02-28-00Z.md</div>
+        <div class="file">summaries/summary_digital_twin.md</div>
+        <div class="file">new_ideas_2026-04-08T02-34-00Z.md</div>
+        <div class="file">new_ideas_personlization_2026-04-08T02-44-00Z.md</div>
+        <div class="file">summary.md</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="badge">Workspace</div>
+      <h2>summaries/summary_2026-04-08T02-28-00Z.md</h2>
+      <div class="actions">
+        <button class="btn">Create Startup Thesis</button>
+        <button class="btn">Create Research Agenda</button>
+        <button class="btn">Create Deck Outline</button>
+        <button class="btn">Create 5 Best Pitch Deck Ideas</button>
+        <button class="btn secondary">Copy Output</button>
+      </div>
+
+      <h3>Source document</h3>
+      <div class="viewer"># Summary: Dynamic UI Generation in E-Commerce
+
+This pass narrows the research set to about 10 paper-style and technical sources relevant to dynamic UI generation in e-commerce...
+
+Key themes:
+- adaptive interfaces
+- personalization systems
+- generative AI for UI/UX
+- experimentation systems
+- composable architecture</div>
+
+      <h3>Generated output</h3>
+      <div class="output"># Startup Thesis
+
+Build a system that helps commerce teams turn research insights about dynamic UI and digital twins into product concepts, validation plans, and investor-ready narratives.
+
+## Problem
+Teams can identify promising research themes, but they often struggle to operationalize them into venture-scale product theses.
+
+## Opportunity
+Create a toolchain that transforms summary documents into structured startup ideas, research agendas, and pitch assets.</div>
+    </section>
+
+    <section class="panel">
+      <div class="badge">History & Usage</div>
+      <h2>Recent generations</h2>
+      <div class="usage">
+        <strong>This run</strong>
+        <ul>
+          <li>Mode: model-backed</li>
+          <li>Model: gpt-4.1-mini</li>
+          <li>Input tokens: 4,820</li>
+          <li>Output tokens: 1,120</li>
+          <li>Total tokens: 5,940</li>
+          <li>Estimated cost: $0.0037</li>
+        </ul>
+      </div>
+      <div class="usage">
+        <strong>Accumulated totals</strong>
+        <ul>
+          <li>Input tokens: 21,400</li>
+          <li>Output tokens: 5,960</li>
+          <li>Total tokens: 27,360</li>
+          <li>Estimated cost: $0.0174</li>
+        </ul>
+      </div>
+      <div class="history-list">
+        <div class="history-item">
+          <strong>startup-thesis</strong><br />
+          <span class="muted">2026-04-08T15:39:00Z</span><br />
+          <span class="muted">summary_2026-04-08T02-28-00Z.md</span>
+        </div>
+        <div class="history-item">
+          <strong>research-agenda</strong><br />
+          <span class="muted">2026-04-08T15:32:00Z</span><br />
+          <span class="muted">summary_digital_twin.md</span>
+        </div>
+        <div class="history-item">
+          <strong>pitch-decks</strong><br />
+          <span class="muted">2026-04-08T15:21:00Z</span><br />
+          <span class="muted">new_ideas_personlization_2026-04-08T02-44-00Z.md</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
