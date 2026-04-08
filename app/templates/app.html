@@ -45,6 +45,9 @@
     <div class="summary-view">{{ file_content or "No file selected yet." }}</div>
 
     <h3>Generated output</h3>
+    {% if generation_mode %}
+    <p class="muted"><strong>Generation mode:</strong> {{ generation_mode }}</p>
+    {% endif %}
     <div class="output">{{ generated_output or "Nothing generated yet." }}</div>
   </section>
 </div>

@@ -63,7 +63,12 @@ def logout():
 
 
 @app.get("/app", response_class=HTMLResponse)
-def app_home(request: Request, file: Optional[str] = None, generated_output: Optional[str] = None):
+def app_home(
+    request: Request,
+    file: Optional[str] = None,
+    generated_output: Optional[str] = None,
+    generation_mode: Optional[str] = None,
+):
     if not is_logged_in(request):
         return RedirectResponse(url="/", status_code=303)
 
@@ -80,6 +85,7 @@ def app_home(request: Request, file: Optional[str] = None, generated_output: Opt
             "selected_file": selected_file,
             "file_content": file_content,
             "generated_output": generated_output,
+            "generation_mode": generation_mode,
         },
     )
 
@@ -91,7 +97,7 @@ def generate_view(request: Request, kind: str, file: str = Form(...)):
 
     files = list_markdown_files()
     content = read_markdown_file(file)
-    output = generate(kind, file, content)
+    output, generation_mode = generate(kind, file, content)
 
     return templates.TemplateResponse(
         "app.html",
@@ -102,5 +108,6 @@ def generate_view(request: Request, kind: str, file: str = Form(...)):
             "selected_file": file,
             "file_content": content,
             "generated_output": output,
+            "generation_mode": generation_mode,
         },
     )
