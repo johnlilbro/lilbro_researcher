@@ -46,9 +46,9 @@ button {
 }
 button.secondary { background: #eef3ff; color: #2447a8; border: 1px solid #cbd8ff; }
 .muted { color: #667085; }
-.grid {
+.grid-three {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 300px 1.25fr 0.9fr;
   gap: 20px;
 }
 .panel {
@@ -57,7 +57,7 @@ button.secondary { background: #eef3ff; color: #2447a8; border: 1px solid #cbd8f
   padding: 18px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
-.summary-list {
+.summary-list, .history-list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -93,6 +93,23 @@ pre, .output, .summary-view {
   font-weight: 700;
   margin-bottom: 10px;
 }
-@media (max-width: 960px) {
-  .grid { grid-template-columns: 1fr; }
+.usage-box {
+  background: #f8fbff;
+  border: 1px solid #dbe8ff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.usage-box ul {
+  margin: 8px 0 0 18px;
+  padding: 0;
+}
+.history-list li {
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e5eaf2;
+}
+@media (max-width: 1100px) {
+  .grid-three { grid-template-columns: 1fr; }
 }

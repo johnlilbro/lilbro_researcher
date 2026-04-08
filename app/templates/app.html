@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="grid">
+<div class="grid-three">
   <section class="panel">
     <div class="badge">Summaries</div>
     <h2>Available markdown files</h2>
@@ -48,7 +48,61 @@
     {% if generation_mode %}
     <p class="muted"><strong>Generation mode:</strong> {{ generation_mode }}</p>
     {% endif %}
-    <div class="output">{{ generated_output or "Nothing generated yet." }}</div>
+    {% if saved_file %}
+    <p class="muted"><strong>Saved:</strong> {{ saved_file }} · <a href="/download?path={{ saved_file }}">Download markdown</a></p>
+    {% endif %}
+    {% if usage %}
+    <div class="usage-box">
+      <strong>This run</strong>
+      <ul>
+        <li>Mode: {{ usage.mode }}</li>
+        <li>Model: {{ usage.model }}</li>
+        <li>Input tokens: {{ usage.input_tokens }}</li>
+        <li>Output tokens: {{ usage.output_tokens }}</li>
+        <li>Total tokens: {{ usage.total_tokens }}</li>
+        <li>Estimated cost: ${{ usage.estimated_cost_usd }}</li>
+      </ul>
+    </div>
+    {% endif %}
+    <div class="output" id="generated-output">{{ generated_output or "Nothing generated yet." }}</div>
+    <div class="actions">
+      <button type="button" class="secondary" onclick="copyOutput()">Copy Output</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="badge">History & Usage</div>
+    <h2>Recent generations</h2>
+    <div class="usage-box">
+      <strong>Accumulated totals</strong>
+      <ul>
+        <li>Input tokens: {{ totals.input_tokens }}</li>
+        <li>Output tokens: {{ totals.output_tokens }}</li>
+        <li>Total tokens: {{ totals.total_tokens }}</li>
+        <li>Estimated cost: ${{ totals.estimated_cost_usd }}</li>
+      </ul>
+    </div>
+    <ul class="history-list">
+      {% for item in history %}
+      <li>
+        <strong>{{ item.kind }}</strong><br />
+        <span class="muted">{{ item.timestamp }}</span><br />
+        <span class="muted">{{ item.source_file }}</span><br />
+        <span class="muted">{{ item.mode }}</span><br />
+        <span class="muted">tokens: {{ item.usage.total_tokens }} · cost: ${{ item.usage.estimated_cost_usd }}</span><br />
+        <a href="/download?path={{ item.saved_file }}">Download</a>
+      </li>
+      {% else %}
+      <li class="muted">No generations yet.</li>
+      {% endfor %}
+    </ul>
   </section>
 </div>
+
+<script>
+function copyOutput() {
+  const text = document.getElementById('generated-output')?.innerText || '';
+  navigator.clipboard.writeText(text);
+}
+</script>
 {% endblock %}

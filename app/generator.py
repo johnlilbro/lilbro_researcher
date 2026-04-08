@@ -1,4 +1,6 @@
+import math
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from textwrap import shorten
 
@@ -14,9 +16,45 @@ SYSTEM_PROMPT = (
     "Be concrete, structured, and insightful. Avoid generic filler."
 )
 
+# Approximate pricing table, easy to update later.
+MODEL_PRICING = {
+    "gpt-4.1-mini": {"input_per_million": 0.40, "output_per_million": 1.60},
+    "gpt-4.1": {"input_per_million": 2.00, "output_per_million": 8.00},
+    "gpt-4o-mini": {"input_per_million": 0.15, "output_per_million": 0.60},
+}
+
 
 def summarize_excerpt(content: str, width: int = 1200) -> str:
     return shorten(" ".join(content.split()), width=width, placeholder="...")
+
+
+def estimate_tokens(text: str) -> int:
+    if not text:
+        return 0
+    return max(1, math.ceil(len(text) / 4))
+
+
+def estimate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
+    pricing = MODEL_PRICING.get(model)
+    if not pricing:
+        return 0.0
+    in_cost = (input_tokens / 1_000_000) * pricing["input_per_million"]
+    out_cost = (output_tokens / 1_000_000) * pricing["output_per_million"]
+    return round(in_cost + out_cost, 6)
+
+
+def make_usage_payload(mode: str, model: str, input_tokens: int, output_tokens: int) -> dict:
+    total_tokens = input_tokens + output_tokens
+    cost_estimate = estimate_cost(model, input_tokens, output_tokens)
+    return {
+        "mode": mode,
+        "model": model,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "total_tokens": total_tokens,
+        "estimated_cost_usd": cost_estimate,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 def generate_startup_thesis_template(filename: str, content: str) -> str:
@@ -81,7 +119,7 @@ def prompt_for_kind(kind: str, filename: str, content: str) -> str:
     )
 
 
-def llm_generate(kind: str, filename: str, content: str) -> str:
+def llm_generate(kind: str, filename: str, content: str) -> tuple[str, dict]:
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key or OpenAI is None:
         raise RuntimeError("LLM generation unavailable")
@@ -95,13 +133,35 @@ def llm_generate(kind: str, filename: str, content: str) -> str:
             {"role": "user", "content": prompt},
         ],
     )
-    return response.output_text.strip()
+
+    usage = getattr(response, "usage", None)
+    input_tokens = getattr(usage, "input_tokens", None) if usage else None
+    output_tokens = getattr(usage, "output_tokens", None) if usage else None
+
+    if input_tokens is None:
+        input_tokens = estimate_tokens(SYSTEM_PROMPT + "\n" + prompt)
+    if output_tokens is None:
+        output_tokens = estimate_tokens(response.output_text)
+
+    usage_payload = make_usage_payload(
+        mode="model-backed",
+        model=MODEL_NAME,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+    )
+    return response.output_text.strip(), usage_payload
 
 
-def generate(kind: str, filename: str, content: str) -> tuple[str, str]:
+def generate(kind: str, filename: str, content: str) -> tuple[str, str, dict]:
     try:
-        output = llm_generate(kind, filename, content)
-        return output, f"model-backed ({MODEL_NAME})"
+        output, usage = llm_generate(kind, filename, content)
+        return output, f"model-backed ({MODEL_NAME})", usage
     except Exception:
         output = template_generate(kind, filename, content)
-        return output, "template-fallback"
+        usage = make_usage_payload(
+            mode="template-fallback",
+            model="template",
+            input_tokens=estimate_tokens(content),
+            output_tokens=estimate_tokens(output),
+        )
+        return output, "template-fallback", usage
