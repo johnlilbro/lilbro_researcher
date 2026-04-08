@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid-three">
+  <section class="panel">
+    <div class="badge">Summaries</div>
+    <h2>Available markdown files</h2>
+    <p class="muted">Pick a summary or ideas document, then generate a derived artifact.</p>
+    <ul class="summary-list">
+      {% for file in files %}
+      <li>
+        <form method="get" action="/app">
+          <input type="hidden" name="file" value="{{ file }}" />
+          <button type="submit" class="secondary">{{ file }}</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="badge">Workspace</div>
+    <h2>{{ selected_file or "Select a summary file" }}</h2>
+    <div class="actions">
+      {% if selected_file %}
+      <form method="post" action="/generate/startup-thesis">
+        <input type="hidden" name="file" value="{{ selected_file }}" />
+        <button type="submit">Create Startup Thesis</button>
+      </form>
+      <form method="post" action="/generate/research-agenda">
+        <input type="hidden" name="file" value="{{ selected_file }}" />
+        <button type="submit">Create Research Agenda</button>
+      </form>
+      <form method="post" action="/generate/deck-outline">
+        <input type="hidden" name="file" value="{{ selected_file }}" />
+        <button type="submit">Create Deck Outline</button>
+      </form>
+      <form method="post" action="/generate/pitch-decks">
+        <input type="hidden" name="file" value="{{ selected_file }}" />
+        <button type="submit">Create 5 Best Pitch Deck Ideas</button>
+      </form>
+      {% endif %}
+    </div>
+
+    <h3>Source document</h3>
+    <div class="summary-view">{{ file_content or "No file selected yet." }}</div>
+
+    <h3>Generated output</h3>
+    {% if generation_mode %}
+    <p class="muted"><strong>Generation mode:</strong> {{ generation_mode }}</p>
+    {% endif %}
+    {% if saved_file %}
+    <p class="muted"><strong>Saved:</strong> {{ saved_file }} · <a href="/download?path={{ saved_file }}">Download markdown</a></p>
+    {% endif %}
+    {% if usage %}
+    <div class="usage-box">
+      <strong>This run</strong>
+      <ul>
+        <li>Mode: {{ usage.mode }}</li>
+        <li>Model: {{ usage.model }}</li>
+        <li>Input tokens: {{ usage.input_tokens }}</li>
+        <li>Output tokens: {{ usage.output_tokens }}</li>
+        <li>Total tokens: {{ usage.total_tokens }}</li>
+        <li>Estimated cost: ${{ usage.estimated_cost_usd }}</li>
+      </ul>
+    </div>
+    {% endif %}
+    <div class="output" id="generated-output">{{ generated_output or "Nothing generated yet." }}</div>
+    <div class="actions">
+      <button type="button" class="secondary" onclick="copyOutput()">Copy Output</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="badge">History & Usage</div>
+    <h2>Recent generations</h2>
+    <div class="usage-box">
+      <strong>Accumulated totals</strong>
+      <ul>
+        <li>Input tokens: {{ totals.input_tokens }}</li>
+        <li>Output tokens: {{ totals.output_tokens }}</li>
+        <li>Total tokens: {{ totals.total_tokens }}</li>
+        <li>Estimated cost: ${{ totals.estimated_cost_usd }}</li>
+      </ul>
+    </div>
+    <ul class="history-list">
+      {% for item in history %}
+      <li>
+        <strong>{{ item.kind }}</strong><br />
+        <span class="muted">{{ item.timestamp }}</span><br />
+        <span class="muted">{{ item.source_file }}</span><br />
+        <span class="muted">{{ item.mode }}</span><br />
+        <span class="muted">tokens: {{ item.usage.total_tokens }} · cost: ${{ item.usage.estimated_cost_usd }}</span><br />
+        <a href="/download?path={{ item.saved_file }}">Download</a>
+      </li>
+      {% else %}
+      <li class="muted">No generations yet.</li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+
+<script>
+function copyOutput() {
+  const text = document.getElementById('generated-output')?.innerText || '';
+  navigator.clipboard.writeText(text);
+}
+</script>
+{% endblock %}
