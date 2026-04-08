@@ -11,22 +11,26 @@ lilbro_researcher/
 ├── app/                    # FastAPI application code
 │   ├── main.py
 │   ├── generator.py
+│   ├── db.py
+│   ├── config.py
 │   ├── static/
 │   └── templates/
 ├── summaries/              # source markdown summaries
-├── generated_outputs/      # generated markdown artifacts
+├── generated_outputs/      # generated markdown artifacts (prototype mode)
+├── data/                   # sqlite database in local/prototype mode
 ├── README.md
 ├── requirements.txt
 ├── Procfile
-├── .gitignore
+├── railway.json
 └── railway_plan.md
 ```
 
 ## Why this structure works
 
-- `app/` contains only runtime web application code
+- `app/` contains runtime web application code
 - `summaries/` contains curated research inputs
-- `generated_outputs/` contains generated artifacts
+- `data/` contains SQLite persistence in prototype mode
+- `generated_outputs/` contains generated artifacts for download convenience
 - top-level deployment files stay simple for Railway
 
 ## Deployment concerns
@@ -35,24 +39,25 @@ lilbro_researcher/
 Railway containers do not guarantee durable local storage.
 
 That means:
-- `generated_outputs/` is fine for local development
-- in production, generated history should eventually move to:
-  - Postgres
-  - S3 / object storage
-  - or another durable store
+- SQLite in `data/app.db` is acceptable for prototype deployment
+- `generated_outputs/` is acceptable for prototype deployment
+- neither should be treated as durable production persistence
 
 ### 2. Environment variables
 Set at least:
 
 - `OPENAI_API_KEY`
 - `OPENAI_MODEL` (optional)
+- `APP_DATA_DIR` (optional)
+- `APP_GENERATED_DIR` (optional)
+- `APP_DB_PATH` (optional)
 - `PORT` (Railway usually injects this)
 
 ### 3. Start command
-Use the Procfile:
+Use the Procfile / Railway config:
 
 ```text
-web: uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
 
 ### 4. Authentication
@@ -63,35 +68,45 @@ Before production, replace it with:
 - or OAuth
 
 ### 5. Persistence roadmap
-For Railway-readiness, next refactor should move history storage out of JSON files and into a database-backed service.
+Current persistence model:
+- generation history -> SQLite
+- generated markdown outputs -> filesystem
+
+Recommended next production upgrade:
+- generation history -> Postgres
+- generated documents -> object storage or database
 
 ## Suggested next refactor
 
 ### Phase 1
 - Ship current app to Railway as a prototype
 - keep summaries in repo
-- keep generated outputs ephemeral
+- use SQLite and local generated outputs temporarily
 
 ### Phase 2
-- add database for generation history
+- add Postgres-backed history and output storage
 - add stored users/auth
-- add saved outputs table
+- migrate file-based generated outputs
 
 ### Phase 3
 - separate research content from app content if repo grows large
-- possibly move summaries to a `data/` service layer or object storage
+- possibly move summaries to object storage or a content service layer
 
 ## Concrete deployment steps
 
 1. Push branch to GitHub
-2. Create new Railway project from GitHub repo
-3. Set env vars:
+2. Create a new Railway project from the GitHub repo
+3. Select branch `devel`
+4. Set env vars:
    - `OPENAI_API_KEY`
    - optional `OPENAI_MODEL`
-4. Confirm Railway detects Python project
-5. Deploy using Procfile command
-6. Test login, file selection, generation, and download flows
+   - optional `APP_DATA_DIR`
+   - optional `APP_GENERATED_DIR`
+   - optional `APP_DB_PATH`
+5. Confirm Railway detects the Python project
+6. Deploy using Railway config / Procfile command
+7. Test login, file selection, generation, history, usage, and download flows
 
 ## Recommendation
 
-This repo is now close enough to deploy as a prototype, but for a more serious production version the main structural upgrade should be replacing file-based history/output persistence with a database or object storage layer.
+This repo is now ready for a **prototype Railway deployment** using SQLite as a transitional persistence layer. The right long-term step is to replace SQLite and filesystem output storage with production-grade managed persistence.

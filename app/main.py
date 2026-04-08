@@ -8,15 +8,13 @@ from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app.config import BASE_DIR, GENERATED_DIR
 from app.db import add_generation, init_db, recent_generations
 from app.generator import generate
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / "app" / "templates"
 STATIC_DIR = BASE_DIR / "app" / "static"
 SEARCH_DIRS = [BASE_DIR / "summaries", BASE_DIR]
-GENERATED_DIR = BASE_DIR / "generated_outputs"
-GENERATED_DIR.mkdir(exist_ok=True)
 
 app = FastAPI(title="lilbro researcher")
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")

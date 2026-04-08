@@ -63,9 +63,17 @@ Added support for:
 Added a first database-backed persistence layer using SQLite for generation history.
 This replaces the earlier flat JSON approach for tracking recent generations and usage.
 
+### 11. Railway deployment prep with configurable persistence paths
+Added environment-configurable storage paths for:
+- SQLite database location
+- generated output directory
+- app data directory
+
+Also added Railway-focused persistence notes describing how SQLite and filesystem storage behave in prototype deployments.
+
 ## Deployment planning
 
-### 11. Railway deployment planning
+### 12. Railway deployment planning
 Created `railway_plan.md` with:
 - recommended repository structure
 - deployment notes for Railway
@@ -73,7 +81,7 @@ Created `railway_plan.md` with:
 - warning about ephemeral filesystem storage
 - guidance for future persistence and auth improvements
 
-### 12. Procfile and deployment readiness
+### 13. Procfile and deployment readiness
 Added a `Procfile` using:
 
 ```text
